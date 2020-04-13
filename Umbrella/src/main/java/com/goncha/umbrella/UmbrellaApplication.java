@@ -1,4 +1,4 @@
-package edu.umbrella.oscar;
+package com.goncha.umbrella;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
