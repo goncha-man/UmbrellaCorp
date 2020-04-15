@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+		<title>Umbrella Corporation Menu</title>
+		<link rel="shortcut icon" href="../favicon.ico">
+		<link rel="stylesheet" type="text/css" href="css/normalize.css"/>
+		<link rel="stylesheet" type="text/css" href="css/demo.css"/>
+		<link rel="stylesheet" type="text/css" href="css/component.css"/>
+		
+		<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+		<script th:src="@{/js/modernizr.custom.js}"></script>
+		<script th:src="@{/js/home/main.js}"></script> 
+	</head>
+	<body>
+		<div class="container">
+			<ul id="gn-menu" class="gn-menu-main">
+				<li class="gn-trigger">
+					<a class="gn-icon gn-icon-menu"><span>Menu</span></a>
+					<nav class="gn-menu-wrapper">
+						<div class="gn-scroller">
+							<ul class="gn-menu">
+								<li>
+									<a class="gn-icon gn-icon-download">Paciente</a>
+									<ul class="gn-submenu">
+										<li><a id="addPatient" class="gn-icon gn-icon-article">Registrar</a></li>
+										<li><a id="removePatient" class="gn-icon gn-icon-download">Borrar</a></li>
+										<li><a id="infoPatient" class="gn-icon gn-icon-search">Buscar</a></li>		
+								
+									</ul>
+								</li>
+								<li>
+									<a class="gn-icon gn-icon-cog">Farmacias</a>
+									<ul class="gn-submenu">
+										<li><a class="gn-icon gn-icon-article">Registrar</a></li>
+										<li><a class="gn-icon gn-icon-download">Borrar</a></li>
+										<li><a class="gn-icon gn-icon-search">Buscar</a></li>		
+								
+									</ul>
+								</li>
+								<li>
+									<a class="gn-icon gn-icon-earth">Hospitales</a>
+									<ul class="gn-submenu">
+										<li><a class="gn-icon gn-icon-article">Registrar</a></li>
+										<li><a class="gn-icon gn-icon-download">Borrar</a></li>
+										<li><a class="gn-icon gn-icon-search">Buscar</a></li>		
+								
+									</ul>
+								</li>
+								<li><a class="gn-icon gn-icon-cog">Settings</a></li>
+							</ul>
+						</div><!-- /gn-scroller -->
+					</nav>
+				</li>
+				<li><a href="#"><spam>[[${#httpServletRequest.remoteUser}]]</span></a></li>
+				<li><img class="img" name="waiting" src="img/RER_anim6.gif"></li>
+				<li><a class="codrops-icon codrops-icon-drop" href="javascript: document.logoutForm.submit()" > Cerrar sesion</a></li>
+			</ul>
+			<form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+          		<input hidden type="submit" value="Cerrar Sesion"/>
+        	</form>
+			<header>
+				<div id=contentToShow>
+					<h1>Umbrella Corporation<span>International biological solutions</span></h1>
+				</div>
+			</header> 
+		</div><!-- /container -->
+		<script th:src="@{/js/classie.js}"></script>
+		<script th:src="@{/js/gnmenu.js}"></script>
+		<script>
+			new gnMenu( document.getElementById( 'gn-menu' ) );
+		</script>
+	</body>
+</html>

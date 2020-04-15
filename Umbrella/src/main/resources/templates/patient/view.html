@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Vista</title>
+<!-- JQUERY -->
+<script type="text/javascript" th:src="@{/js/common/jquery.js}"></script>
+<!--FRAMEWORK BOOTSTRAP para el estilo de la pagina-->
+<link rel="stylesheet" th:href="@{/css/common/bootstrap.min.css}" />
+<script type="text/javascript" th:src="@{/js/common/bootstrap.min.js}"></script>
+<!-- Los iconos tipo Solid de Fontawesome-->
+<link rel="stylesheet" th:href="@{https://use.fontawesome.com/releases/v5.0.8/css/solid.css}" />
+<script type="text/javascript" th:src="@{https://use.fontawesome.com/releases/v5.0.7/js/all.js}"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+	integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	crossorigin="anonymous">
+</script>
+
+<!-- DATA TABLE -->
+<script type="text/javascript" th:src="@{https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script type="text/javascript" th:src="@{https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+<link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css}">	
+<link rel="stylesheet" th:href="@{https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css}">
+
+<!-- Nuestro css-->
+<link rel="stylesheet" th:href="@{/css/form/main.css}" />
+<script type="text/javascript" th:src="@{/js/common/table.js}"></script>
+
+</head>
+<body class="background">
+	<div class="container">
+		<div class="mx-auto col-sm-8 main-section" id="myTab" role="tablist">
+			<ul class="nav nav-tabs justify-content-end">
+				<li class="nav-item">
+					<a class="nav-link" th:classappend=" ${listTab}" id="list-tab" data-toggle="tab" href="#list" role="tab" aria-controls="list" aria-selected="false">
+						List
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" th:classappend=" ${formTab}" id="form-tab" data-toggle="tab" href="#form" role="tab" aria-controls="form" aria-selected="true">
+						Form
+					</a>
+				</li>
+			</ul>
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade show" th:classappend=" ${listTab}" id="list" role="tabpanel" aria-labelledby="list-tab">
+					<div class="card">
+						<div class="card-header">
+							<h4>Usuarios</h4>
+						</div>
+						<div class="card-body">
+							<div th:include="patient/list.html" th:remove="tag"></div>
+						</div>
+					</div>
+				</div>
+				<div class="tab-pane fade show" th:classappend="${formTab}" id="form" role="tabpanel" aria-labelledby="form-tab">
+					<div class="card">
+						<div class="card-header">
+							<h4>Agregar Usuario</h4>
+						</div>
+						<div class="card-body">
+							<div th:include="patient/form.html" th:remove="tag"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

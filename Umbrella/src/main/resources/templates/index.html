@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Umbrella Corp.</title>
+<!-- JQUERY -->
+<script type="text/javascript" th:src="@{/js/common/jquery.js}"></script>
+<!--FRAMEWORK BOOTSTRAP para el estilo de la pagina-->
+<link rel="stylesheet" th:href="@{/css/common/bootstrap.min.css}" />
+<script type="text/javascript" th:src="@{/js/common/bootstrap.min.js}"></script>
+
+
+<!-- Los iconos tipo Solid de Fontawesome-->
+<link rel="stylesheet" th:href="@{https://use.fontawesome.com/releases/v5.0.8/css/solid.css}" /> 
+<script type="text/javascript" th:src="@{https://use.fontawesome.com/releases/v5.0.7/js/all.js}"></script>
+<!-- Nuestro css-->
+<link rel="stylesheet" th:href="@{/css/login/index.css}" />
+</head>
+<body class="login-background">
+	<div class="modal-dialog text-center">
+		<div class="col-sm-8 main-section">
+			<div class="modal-content">
+				<div class="col-12 avatar-img">
+					<img th:src="@{/img/login/racoon.png}" />
+				</div>
+				<form class="col-12" action="">
+					<div class="form-group" id="user-group">
+						<input type="text" class="form-control" placeholder="Access Code">
+					</div>
+					<div class="form-group" id="pwd-group">
+						<input type="password" class="form-control" placeholder="Security Key">
+					</div>
+					<button type="submit" class="btn btn-danger sign-in"><i class="fas fa-sign-in-alt"></i>  Sign in</button>
+				</form>
+				<div class="col-12 forgot">
+					<a href="#">Remember Security Key</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
