@@ -31,7 +31,7 @@
 					</th>
 					<td>
 						<span> 
-							<a href="#"> <i class="fas fa-edit"></i>
+							<a href="#" th:href="@{'/user/editUser/' + ${user.id}}"> <i class="fas fa-edit"></i>
 								</a> |
 						</span>
 					 	<span> 
@@ -45,3 +45,4 @@
 	</div>
 </body>
 </html>
+

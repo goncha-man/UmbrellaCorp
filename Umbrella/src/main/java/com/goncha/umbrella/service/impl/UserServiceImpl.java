@@ -29,6 +29,22 @@ public class UserServiceImpl implements UserService{
 		}
 		return null;
 	}
+	
+	@Override
+	public User updateUser(@Valid User fromUser) throws Exception {
+		
+		User toUser = getUserById(fromUser.getId());
+		mapUser(fromUser, toUser);
+		return repository.save(toUser);
+	}
+	
+	@Override
+	public User getUserById(Long id) throws Exception {
+		
+		return repository.findById(id).orElseThrow(()-> new Exception("El usuario no existe"));
+		
+	
+	}
 
 	private boolean checkUsernameAvailale(User user) throws Exception{
 
@@ -45,6 +61,9 @@ public class UserServiceImpl implements UserService{
 
 	private boolean checkPassworodValid(User user) throws Exception {
 
+		if(user.getConfirmPassword() == null || user.getConfirmPassword().isEmpty()) 
+			throw new Exception("Corfirm password can not be empty");
+		
 		boolean isValid = user.getPassword().equals(user.getConfirmPassword());
 		
 		if(!isValid) {
@@ -55,6 +74,15 @@ public class UserServiceImpl implements UserService{
 		
 		return isValid;
 
+	}
+	
+	protected void mapUser(User from, User to) {
+		to.setUsername(from.getUsername());
+		to.setFirstName(from.getFirstName());
+		to.setLastName(from.getLastName());
+		to.setEmail(from.getEmail());
+		to.setRoles(from.getRoles());
+		to.setEnabled(from.getEnabled());
 	}
 	
 }

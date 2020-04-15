@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -31,7 +32,7 @@ public class UserController {
 	@GetMapping("/view")
 	public String view(Model model) {
 		baseAttributerForUserForm(model, new User(), TAB_LIST );
-		return "patient/view";
+		return "user/view";
 	}
 	
 	@PostMapping("/view")
@@ -50,7 +51,41 @@ public class UserController {
 			model.addAttribute("userList", userService.getAllUser());
 			model.addAttribute("roles", roleRepository.findAll());
 		
-		return "patient/view";
+		return "user/view";
+	}
+	
+	@GetMapping("/editUser/{id}")
+	public String getEditUser(Model model, @PathVariable(name="id")Long id)  throws Exception{
+		User userEdit = userService.getUserById(id);
+		baseAttributerForUserForm(model, userEdit, TAB_FORM);
+		model.addAttribute("editMode", "true");
+		return "user/view";	
+	}
+	
+	@PostMapping("/editUser")
+	public String postEditUser(@Valid @ModelAttribute("user")User user, BindingResult result, Model model) {
+		if(result.hasErrors()) {
+			baseAttributerForUserForm(model, user, TAB_FORM);
+			model.addAttribute("editMode", "true");
+		}else {
+			try {
+				userService.updateUser(user);
+				baseAttributerForUserForm(model, new User(), TAB_LIST);
+			} catch (Exception e) {
+				model.addAttribute("formErrorMessage",  e.getMessage());
+				baseAttributerForUserForm(model, new User(), TAB_FORM);
+				model.addAttribute("editMode", "true");
+			}
+		}
+			model.addAttribute("userList", userService.getAllUser());
+			model.addAttribute("roles", roleRepository.findAll());
+		
+		return "user/view";
+	}
+	
+	@GetMapping("/cancel")
+	public String cancelEditUser(Model model) {
+		return "redirect:/user/view";
 	}
 	
 	private void baseAttributerForUserForm(Model model, User user,String activeTab) {
