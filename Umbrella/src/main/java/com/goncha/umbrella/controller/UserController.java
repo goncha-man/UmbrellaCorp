@@ -88,6 +88,16 @@ public class UserController {
 		return "redirect:/user/view";
 	}
 	
+	@GetMapping("/deleteUser/{id}")
+	public String deleteUser(Model model, @PathVariable(name="id") Long id) {
+		try {
+			userService.deleteUser(id);
+		} catch (Exception e) {
+			model.addAttribute("deleteError","The user could not be deleted.");
+		}
+		return view(model);
+	}
+	
 	private void baseAttributerForUserForm(Model model, User user,String activeTab) {
 		model.addAttribute("user", user);
 		model.addAttribute("userList", userService.getAllUser());

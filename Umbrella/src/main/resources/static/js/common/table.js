@@ -2,12 +2,15 @@
 
 window.addEventListener('load', () => {
     $('#userList').DataTable();
-    $('#checkEnable').checked = true;
-    
-    $('#v-pills-tab a[href="#v-pills-home"]').on('click', function (e) {
-    	console.log("tocaste")
-    	console.log(this)
-    	  e.preventDefault()
-    	  $(this).tab('show')
-    	})
 });
+
+function confirmDelete(id){
+	$('#deleteModal').modal('show');
+	$("#userIdHiddenInput").val(id);
+}
+
+function deleteUser(){
+	console.log("hola")
+	var id = $("#userIdHiddenInput").val();
+    window.location = "deleteUser/"+id;
+}

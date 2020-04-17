@@ -2,7 +2,6 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
 </head>
 <body>
 	<div class="table-responsive">
@@ -35,13 +34,15 @@
 								</a> |
 						</span>
 					 	<span> 
-						 		<a href="#"> <i class="fas fa-user-times"> </i>
-								</a>
+					 		<a href="#" th:onclick="'javascript:confirmDelete(\''+ ${user.id} +'\');'"><i class="fas fa-user-times"></i></a>
 						</span>
 					</td>
 				</tr>
 			</tbody>
 		</table>
+		<div id="deleteError" th:if="${deleteError}" class="alert alert-danger text-center" role="alert">
+			<span th:text="${deleteError}"></span>
+		</div>
 	</div>
 </body>
 </html>

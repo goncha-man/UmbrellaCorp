@@ -45,6 +45,14 @@ public class UserServiceImpl implements UserService{
 		
 	
 	}
+	
+	@Override
+	public void deleteUser(Long id) throws Exception {
+		
+		User user = getUserById(id);
+		repository.delete(user);
+		
+	}
 
 	private boolean checkUsernameAvailale(User user) throws Exception{
 
