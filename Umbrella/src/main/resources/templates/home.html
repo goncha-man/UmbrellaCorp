@@ -1,76 +1,369 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-	<head>
-		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
-		<title>Umbrella Corporation Menu</title>
-		<link rel="shortcut icon" href="../favicon.ico">
-		<link rel="stylesheet" type="text/css" href="css/normalize.css"/>
-		<link rel="stylesheet" type="text/css" href="css/demo.css"/>
-		<link rel="stylesheet" type="text/css" href="css/component.css"/>
-		
-		<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-		<script th:src="@{/js/modernizr.custom.js}"></script>
-		<script th:src="@{/js/home/main.js}"></script> 
-	</head>
-	<body>
-		<div class="container">
-			<ul id="gn-menu" class="gn-menu-main">
-				<li class="gn-trigger">
-					<a class="gn-icon gn-icon-menu"><span>Menu</span></a>
-					<nav class="gn-menu-wrapper">
-						<div class="gn-scroller">
-							<ul class="gn-menu">
-								<li>
-									<a class="gn-icon gn-icon-download">Paciente</a>
-									<ul class="gn-submenu">
-										<li><a id="addPatient" class="gn-icon gn-icon-article">Registrar</a></li>
-										<li><a id="removePatient" class="gn-icon gn-icon-download">Borrar</a></li>
-										<li><a id="infoPatient" class="gn-icon gn-icon-search">Buscar</a></li>		
-								
-									</ul>
-								</li>
-								<li>
-									<a class="gn-icon gn-icon-cog">Farmacias</a>
-									<ul class="gn-submenu">
-										<li><a class="gn-icon gn-icon-article">Registrar</a></li>
-										<li><a class="gn-icon gn-icon-download">Borrar</a></li>
-										<li><a class="gn-icon gn-icon-search">Buscar</a></li>		
-								
-									</ul>
-								</li>
-								<li>
-									<a class="gn-icon gn-icon-earth">Hospitales</a>
-									<ul class="gn-submenu">
-										<li><a class="gn-icon gn-icon-article">Registrar</a></li>
-										<li><a class="gn-icon gn-icon-download">Borrar</a></li>
-										<li><a class="gn-icon gn-icon-search">Buscar</a></li>		
-								
-									</ul>
-								</li>
-								<li><a class="gn-icon gn-icon-cog">Settings</a></li>
-							</ul>
-						</div><!-- /gn-scroller -->
-					</nav>
-				</li>
-				<li><a href="#"><spam>[[${#httpServletRequest.remoteUser}]]</span></a></li>
-				<li><img class="img" name="waiting" src="img/RER_anim6.gif"></li>
-				<li><a class="codrops-icon codrops-icon-drop" href="javascript: document.logoutForm.submit()" > Cerrar sesion</a></li>
-			</ul>
-			<form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
-          		<input hidden type="submit" value="Cerrar Sesion"/>
-        	</form>
-			<header>
-				<div id=contentToShow>
-					<h1>Umbrella Corporation<span>International biological solutions</span></h1>
-				</div>
-			</header> 
-		</div><!-- /container -->
-		<script th:src="@{/js/classie.js}"></script>
-		<script th:src="@{/js/gnmenu.js}"></script>
-		<script>
-			new gnMenu( document.getElementById( 'gn-menu' ) );
-		</script>
-	</body>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Umbrella Corp. | Dashboard</title>
+    <script type="text/javascript" th:src="@{/js/common/jquery.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/common/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/js/common/bootstrap.min.js}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+    <!-- DataTables (necesario para módulo usuarios) -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"/>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background-color: #181818;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 240px;
+            min-height: 100vh;
+            background-color: #111;
+            border-right: 1px solid #2a2a2a;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 100;
+        }
+        .sidebar-brand {
+            padding: 1.5rem 1.2rem 1rem;
+            border-bottom: 1px solid #222;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar-brand img { width: 36px; filter: drop-shadow(0 0 4px #c0392b88); }
+        .sidebar-brand .brand-text { font-size: 0.95rem; font-weight: 700; letter-spacing: 1px; color: #fff; line-height: 1.2; }
+        .sidebar-brand .brand-sub  { font-size: 0.62rem; color: #c0392b; letter-spacing: 2px; text-transform: uppercase; }
+
+        .sidebar-section { padding: 1rem 0.8rem 0.3rem; font-size: 0.62rem; color: #555; text-transform: uppercase; letter-spacing: 2px; }
+        .sidebar nav { flex: 1; padding: 0 0.5rem; }
+
+        .nav-item-side {
+            display: flex; align-items: center; gap: 10px;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            color: #aaa; text-decoration: none; font-size: 0.88rem;
+            transition: background 0.15s, color 0.15s;
+            margin-bottom: 2px; cursor: pointer; border: none; background: none; width: 100%; text-align: left;
+        }
+        .nav-item-side i { width: 18px; text-align: center; font-size: 0.9rem; }
+        .nav-item-side:hover, .nav-item-side.active {
+            background-color: rgba(192,57,43,0.12); color: #fff; text-decoration: none;
+        }
+        .nav-item-side.active { border-left: 3px solid #c0392b; padding-left: calc(0.8rem - 3px); }
+        .badge-soon { margin-left: auto; font-size: 0.58rem; background: #333; color: #666; padding: 2px 6px; border-radius: 10px; }
+
+        .sidebar-footer { padding: 1rem; border-top: 1px solid #222; }
+        .sidebar-user { display: flex; align-items: center; gap: 10px; margin-bottom: 0.75rem; }
+        .avatar-circle {
+            width: 34px; height: 34px; background: #c0392b; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; font-weight: bold; color: #fff; flex-shrink: 0;
+        }
+        .sidebar-user .user-name { font-size: 0.85rem; font-weight: 600; color: #eee; }
+        .sidebar-user .user-role { font-size: 0.7rem; color: #666; }
+        .btn-logout {
+            width: 100%; background: transparent; border: 1px solid #2a2a2a;
+            color: #888; font-size: 0.8rem; padding: 0.4rem; border-radius: 6px;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .btn-logout:hover { background: rgba(192,57,43,0.15); border-color: #c0392b; color: #c0392b; }
+
+        /* ── MAIN ── */
+        .main-content { margin-left: 240px; flex: 1; padding: 2rem 2.5rem; position: relative; }
+
+        /* ── BACKGROUND PERMANENTE ── */
+        .main-content::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 240px;
+            right: 0;
+            bottom: 0;
+            background: url(/img/home.jpg) no-repeat center center;
+            background-size: cover;
+            opacity: 0.35;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .main-content > * { position: relative; z-index: 1; }
+
+        .page-header { margin-bottom: 2rem; }
+        .page-header h4 { font-weight: 700; color: #fff; margin: 0; }
+        .page-header span { font-size: 0.8rem; color: #666; }
+
+        /* ── STAT CARDS ── */
+        .stat-card {
+            background: #1e1e1e; border: 1px solid #2a2a2a;
+            border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
+        }
+        .stat-label { font-size: 0.72rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: #fff; margin: 0.2rem 0 0; }
+        .stat-icon { width: 46px; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+
+        /* ── RECENT TABLE ── */
+        .section-card { background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 10px; overflow: hidden; }
+        .section-card-header {
+            padding: 1rem 1.5rem; border-bottom: 1px solid #2a2a2a;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .section-card-header span { font-size: 0.85rem; font-weight: 600; color: #ccc; }
+        .section-card-header a { font-size: 0.75rem; color: #c0392b; text-decoration: none; }
+        .section-card-header a:hover { text-decoration: underline; }
+        .dark-table { width: 100%; border-collapse: collapse; }
+        .dark-table thead th {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
+            color: #555; padding: 0.6rem 1.5rem; font-weight: 500; background: #1a1a1a;
+        }
+        .dark-table tbody tr { border-top: 1px solid #252525; }
+        .dark-table tbody tr:hover { background: #232323; }
+        .dark-table tbody td { padding: 0.75rem 1.5rem; font-size: 0.85rem; color: #ccc; }
+        .badge-active   { background: rgba(39,174,96,0.15);  color: #2ecc71; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; }
+        .badge-inactive { background: rgba(192,57,43,0.15);  color: #e74c3c; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; }
+
+        /* ── COLOR HELPERS ── */
+        .bg-r { background: rgba(192,57,43,0.15);  color: #e74c3c; }
+        .bg-g { background: rgba(39,174,96,0.15);  color: #2ecc71; }
+        .bg-b { background: rgba(52,152,219,0.15); color: #3498db; }
+        .bg-p { background: rgba(155,89,182,0.15); color: #9b59b6; }
+
+        /* ── SPINNER ── */
+        .loading-spinner { display: flex; align-items: center; justify-content: center; height: 200px; }
+
+        /* ── MÓDULO USUARIOS (override para dark context) ── */
+        #main-content .background { background: transparent !important; }
+        #main-content .container  { max-width: 100% !important; padding: 0; }
+        #main-content .main-section { max-width: 100% !important; }
+        #main-content .card { background: #1e1e1e; border: 1px solid #2a2a2a; color: #ccc; }
+        #main-content .card-header { background: #1a1a1a; border-bottom: 1px solid #2a2a2a; color: #ccc; }
+        #main-content .nav-tabs { border-bottom-color: #2a2a2a; }
+        #main-content .nav-tabs .nav-link { color: #888; border-color: transparent; }
+        #main-content .nav-tabs .nav-link.active { background: #1e1e1e; border-color: #2a2a2a #2a2a2a #1e1e1e; color: #fff; }
+        #main-content .form-control { background: #252525; border-color: #333; color: #ddd; }
+        #main-content .form-control:focus { background: #2a2a2a; border-color: #c0392b; box-shadow: none; color: #fff; }
+        #main-content label { color: #aaa; }
+        #main-content table { color: #ccc; }
+        #main-content .table-bordered { border-color: #2a2a2a; }
+        #main-content .table-bordered td, #main-content .table-bordered th { border-color: #2a2a2a; }
+        #main-content .thead-light th { background: #1a1a1a; color: #888; border-color: #2a2a2a; }
+        #main-content .table-hover tbody tr:hover { background: #252525; }
+        #main-content .table-striped tbody tr:nth-of-type(odd) { background: #1c1c1c; }
+        #main-content .dataTables_wrapper .dataTables_length select,
+        #main-content .dataTables_wrapper .dataTables_filter input { background: #252525; border-color: #333; color: #ccc; }
+        #main-content .dataTables_wrapper .dataTables_info,
+        #main-content .dataTables_wrapper .dataTables_length,
+        #main-content .dataTables_wrapper .dataTables_filter { color: #888; }
+        #main-content .page-link { background: #252525; border-color: #333; color: #aaa; }
+        #main-content .page-item.active .page-link { background: #c0392b; border-color: #c0392b; }
+    </style>
+</head>
+<body>
+
+<form name="logoutForm" th:action="@{/logout}" method="post" hidden>
+    <input type="submit" value="Cerrar Sesion"/>
+</form>
+
+<!-- Modal delete (disponible para módulo usuarios cargado por AJAX) -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background:#1e1e1e; color:#ccc; border:1px solid #333;">
+            <div class="modal-header" style="border-color:#333;">
+                <h5 class="modal-title">Confirmar eliminación</h5>
+                <button type="button" class="close" data-dismiss="modal" style="color:#aaa;"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">¿Estás seguro de que querés eliminar este usuario?</div>
+            <div class="modal-footer" style="border-color:#333;">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="deleteUser()">Eliminar</button>
+            </div>
+            <input type="hidden" id="userIdHiddenInput"/>
+        </div>
+    </div>
+</div>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <img th:src="@{/img/login/umbrella.png}" alt="Umbrella">
+        <div>
+            <div class="brand-text">Umbrella</div>
+            <div class="brand-sub">Corporation</div>
+        </div>
+    </div>
+
+    <nav>
+        <div class="sidebar-section">Menú</div>
+        <a href="#" class="nav-item-side active" data-module="dashboard">
+            <i class="fas fa-th-large"></i> Dashboard
+        </a>
+        <a href="#" class="nav-item-side" data-module="pacientes" data-load="/patient/view">
+            <i class="fas fa-procedures"></i> Pacientes
+        </a>
+        <a href="#" class="nav-item-side" style="opacity:0.4; cursor:default;">
+            <i class="fas fa-pills"></i> Farmacias <span class="badge-soon">Pronto</span>
+        </a>
+        <a href="#" class="nav-item-side" style="opacity:0.4; cursor:default;">
+            <i class="fas fa-hospital"></i> Hospitales <span class="badge-soon">Pronto</span>
+        </a>
+
+        <div class="sidebar-section">Admin</div>
+        <a href="#" class="nav-item-side" data-module="usuarios" data-load="/user/view">
+            <i class="fas fa-users-cog"></i> Usuarios
+        </a>
+        <a href="#" class="nav-item-side" style="opacity:0.4; cursor:default;">
+            <i class="fas fa-cog"></i> Configuración <span class="badge-soon">Pronto</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="sidebar-user">
+            <div class="avatar-circle">A</div>
+            <div>
+                <div class="user-name">Admin</div>
+                <div class="user-role">Administrador</div>
+            </div>
+        </div>
+        <button class="btn-logout" onclick="document.logoutForm.submit()">
+            <i class="fas fa-sign-out-alt mr-1"></i> Cerrar sesión
+        </button>
+    </div>
+</aside>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="main-content">
+    <div id="main-content">
+
+        <!-- ── DASHBOARD VIEW (default) ── -->
+        <div id="dashboard-view">
+            <div class="page-header">
+                <h4>Dashboard</h4>
+                <span>Panel de control · Umbrella Corporation</span>
+            </div>
+
+            <!-- STATS -->
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-label">Usuarios</div>
+                            <div class="stat-value" th:text="${userCount}">0</div>
+                        </div>
+                        <div class="stat-icon bg-p"><i class="fas fa-users"></i></div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-label">Pacientes</div>
+                            <div class="stat-value">—</div>
+                        </div>
+                        <div class="stat-icon bg-r"><i class="fas fa-procedures"></i></div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-label">Hospitales</div>
+                            <div class="stat-value">—</div>
+                        </div>
+                        <div class="stat-icon bg-g"><i class="fas fa-hospital"></i></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /dashboard-view -->
+
+    </div>
+</div>
+
+<script>
+    var dashboardHTML = null;
+
+    $(document).ready(function () {
+        dashboardHTML = $('#dashboard-view').html();
+
+        $('[data-load]').on('click', function (e) {
+            e.preventDefault();
+            var url = $(this).data('load');
+
+            $('.nav-item-side').removeClass('active');
+            $(this).addClass('active');
+
+            $('#main-content').html(
+                '<div class="loading-spinner"><i class="fas fa-spinner fa-spin fa-2x" style="color:#c0392b;"></i></div>'
+            );
+
+            loadModule(url);
+        });
+
+        $('[data-module="dashboard"]').on('click', function (e) {
+            e.preventDefault();
+            $('.nav-item-side').removeClass('active');
+            $(this).addClass('active');
+            $('#main-content').html('<div id="dashboard-view">' + dashboardHTML + '</div>');
+            bindDashboardLinks();
+        });
+
+        bindDashboardLinks();
+    });
+
+    function bindDashboardLinks() {
+        $('#main-content [data-load]').on('click', function () {
+            var url = $(this).data('load');
+            $('.nav-item-side').removeClass('active');
+            $('[data-load="' + url + '"]').addClass('active');
+
+            $('#main-content').html(
+                '<div class="loading-spinner"><i class="fas fa-spinner fa-spin fa-2x" style="color:#c0392b;"></i></div>'
+            );
+            loadModule(url);
+        });
+    }
+
+    function renderModule(data) {
+        var doc = new DOMParser().parseFromString(data, 'text/html');
+        var moduleEl = doc.getElementById('module-content');
+        if (!moduleEl) return;
+
+        var scripts = [];
+        $(moduleEl).find('script').each(function () {
+            scripts.push(this.textContent);
+            this.parentNode.removeChild(this);
+        });
+
+        $('#main-content').empty().append($(moduleEl));
+
+        $.each(scripts, function (i, src) {
+            try { $.globalEval(src); } catch (e) { console.error('renderModule script error:', e); }
+        });
+    }
+
+    function loadModule(url) {
+        $.get(url, function (data) { renderModule(data); });
+    }
+
+    function confirmDelete(id) {
+        $('#deleteModal').modal('show');
+        $('#userIdHiddenInput').val(id);
+    }
+
+    function deleteUser() {
+        var id = $('#userIdHiddenInput').val();
+        window.location = '/user/deleteUser/' + id;
+    }
+</script>
+
+</body>
 </html>

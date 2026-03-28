@@ -1,72 +1,364 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Vista</title>
-<!-- JQUERY -->
+<title>Usuarios | Umbrella Corp.</title>
 <script type="text/javascript" th:src="@{/js/common/jquery.js}"></script>
-<!--FRAMEWORK BOOTSTRAP para el estilo de la pagina-->
-<link rel="stylesheet" th:href="@{/css/common/bootstrap.min.css}" />
+<link rel="stylesheet" th:href="@{/css/common/bootstrap.min.css}"/>
 <script type="text/javascript" th:src="@{/js/common/bootstrap.min.js}"></script>
-<!-- Los iconos tipo Solid de Fontawesome-->
-<link rel="stylesheet" th:href="@{https://use.fontawesome.com/releases/v5.0.8/css/solid.css}" />
-<script type="text/javascript" th:src="@{https://use.fontawesome.com/releases/v5.0.7/js/all.js}"></script>
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-	integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-	crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"/>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+</head>
+<body>
+<div id="module-content" style="padding: 1.5rem;">
+<style>
+    .um-card {
+        background: #1e1e1e;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 1.25rem;
+    }
+    .um-card-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .um-card-header .title { font-size: 0.9rem; font-weight: 600; color: #ddd; }
+    .um-card-header .subtitle { font-size: 0.75rem; color: #666; margin-top: 1px; }
+    .um-card-body { padding: 1.5rem; }
+
+    /* Botón agregar */
+    .btn-add {
+        background: linear-gradient(135deg, #c0392b, #96281b);
+        color: #fff;
+        border: 1px solid rgba(192,57,43,0.4);
+        padding: 0.5rem 1.1rem;
+        border-radius: 7px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        letter-spacing: 0.3px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 10px rgba(192,57,43,0.35), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .btn-add:hover {
+        background: linear-gradient(135deg, #d44235, #a93226);
+        box-shadow: 0 4px 18px rgba(192,57,43,0.55), inset 0 1px 0 rgba(255,255,255,0.15);
+        transform: translateY(-1px);
+    }
+    .btn-add:active { transform: translateY(0); box-shadow: 0 1px 6px rgba(192,57,43,0.4); }
+    .btn-add.active {
+        background: #1e1e1e;
+        border-color: #333;
+        color: #888;
+        box-shadow: inset 0 1px 4px rgba(0,0,0,0.4);
+    }
+    .btn-add .btn-icon {
+        width: 20px; height: 20px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 4px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.7rem;
+        transition: background 0.2s;
+    }
+    .btn-add:hover .btn-icon { background: rgba(255,255,255,0.22); }
+    .btn-add.active .btn-icon { background: rgba(255,255,255,0.05); }
+
+    /* Form */
+    .um-label { font-size: 0.78rem; color: #888; margin-bottom: 4px; display: block; }
+    .um-input {
+        background: #252525;
+        border: 1px solid #333;
+        color: #ddd;
+        border-radius: 6px;
+        padding: 0.45rem 0.75rem;
+        font-size: 0.85rem;
+        width: 100%;
+        transition: border-color 0.15s;
+    }
+    .um-input:focus { outline: none; border-color: #c0392b; background: #2a2a2a; color: #fff; }
+    .um-input option { background: #252525; }
+    .field-error { font-size: 0.72rem; color: #e74c3c; margin-top: 3px; }
+
+    .btn-submit {
+        background: #c0392b; color: #fff; border: none;
+        padding: 0.45rem 1.2rem; border-radius: 6px; font-size: 0.82rem; cursor: pointer;
+    }
+    .btn-submit:hover { background: #a93226; }
+    /* Table */
+    .um-table { width: 100%; border-collapse: collapse; }
+    .um-table thead tr {
+        background: #161616;
+        border-top: 1px solid #2a2a2a;
+        border-bottom: 2px solid #c0392b;
+    }
+    .um-table thead th {
+        font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.2px;
+        color: #888; padding: 0.75rem 1.1rem; font-weight: 600;
+    }
+    .um-table tbody tr {
+        border-bottom: 1px solid #222;
+        transition: background 0.15s, border-left-color 0.15s;
+        border-left: 3px solid transparent;
+    }
+    .um-table tbody tr:hover {
+        background: rgba(192,57,43,0.06);
+        border-left-color: #c0392b;
+    }
+    .um-table tbody td {
+        padding: 0.8rem 1.1rem; font-size: 0.85rem; color: #bbb; vertical-align: middle;
+    }
+    .um-table tbody td:first-child { color: #555; font-size: 0.78rem; font-family: monospace; }
+    .um-table .badge-active {
+        background: rgba(39,174,96,0.12); color: #2ecc71;
+        padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 600;
+        border: 1px solid rgba(39,174,96,0.25); letter-spacing: 0.3px;
+    }
+    .um-table .badge-inactive {
+        background: rgba(192,57,43,0.12); color: #e74c3c;
+        padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 600;
+        border: 1px solid rgba(192,57,43,0.25); letter-spacing: 0.3px;
+    }
+    .um-table .action-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 28px; height: 28px;
+        background: #252525; border: 1px solid #333; border-radius: 5px;
+        color: #666; font-size: 0.78rem;
+        transition: all 0.15s; text-decoration: none;
+    }
+    .um-table .action-btn:hover {
+        background: #2e2e2e; border-color: #555; color: #ccc; text-decoration: none;
+    }
+    .um-table .action-btn.delete:hover {
+        background: rgba(192,57,43,0.15); border-color: rgba(192,57,43,0.5); color: #e74c3c;
+    }
+
+    /* DataTables overrides */
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input {
+        background: #252525; border: 1px solid #333; color: #ccc; border-radius: 4px; padding: 2px 6px;
+    }
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter { color: #666; font-size: 0.78rem; margin-bottom: 0.5rem; }
+    .dataTables_wrapper .page-link { background: #252525; border-color: #333; color: #aaa; }
+    .dataTables_wrapper .page-item.active .page-link { background: #c0392b; border-color: #c0392b; }
+    .dataTables_wrapper .page-item.disabled .page-link { background: #1e1e1e; border-color: #2a2a2a; color: #444; }
+
+    /* Alert */
+    .um-alert { padding: 0.6rem 1rem; border-radius: 6px; font-size: 0.82rem; margin-bottom: 1rem; }
+    .um-alert-danger  { background: rgba(192,57,43,0.15); border: 1px solid rgba(192,57,43,0.3); color: #e74c3c; }
+</style>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <div style="font-size:1.1rem; font-weight:700; color:#fff;">Usuarios</div>
+            <div style="font-size:0.75rem; color:#666;">Gestión de usuarios del sistema</div>
+        </div>
+        <button class="btn-add" id="btnToggleForm" onclick="toggleUserForm()">
+            <span class="btn-icon"><i class="fas fa-plus"></i></span>
+            Agregar Usuario
+        </button>
+    </div>
+
+    <!-- Error global -->
+    <div class="um-alert um-alert-danger" th:if="${formErrorMessage}" th:text="${formErrorMessage}"></div>
+
+    <!-- FORM PANEL -->
+    <div id="userFormPanel" th:style="${formTab != 'active' and editMode == null} ? 'display:none'">
+        <div class="um-card">
+            <div class="um-card-header">
+                <div>
+                    <div class="title" th:text="${editMode} ? 'Editar Usuario' : 'Nuevo Usuario'">Nuevo Usuario</div>
+                    <div class="subtitle">Completá los campos requeridos</div>
+                </div>
+            </div>
+            <div class="um-card-body">
+                <form id="userForm" autocomplete="off" th:object="${user}"
+                      th:action="${editMode != null} ? @{/user/editUser} : @{/user/view}" method="post">
+                    <input type="hidden" th:field="*{id}" th:if="${editMode}"/>
+                    <input type="hidden" th:field="*{password}" th:if="${editMode}"/>
+                    <input type="hidden" th:field="*{confirmPassword}" th:if="${editMode}"/>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="um-label">Nombre</label>
+                            <input class="um-input" type="text" th:field="*{firstName}" placeholder="Nombre"/>
+                            <div class="field-error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="um-label">Apellido</label>
+                            <input class="um-input" type="text" th:field="*{lastName}" placeholder="Apellido"/>
+                            <div class="field-error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="um-label">Email</label>
+                            <input class="um-input" type="email" th:field="*{email}" placeholder="correo@ejemplo.com"/>
+                            <div class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="um-label">Username</label>
+                            <input class="um-input" type="text" th:field="*{username}" placeholder="nombre de usuario"/>
+                            <div class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                        </div>
+                        <div class="col-md-6 form-group" th:if="${editMode == null or editMode == false}">
+                            <label class="um-label">Password</label>
+                            <input class="um-input" type="password" th:field="*{password}" placeholder="••••••••"/>
+                            <div class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                        </div>
+                        <div class="col-md-6 form-group" th:if="${editMode == null or editMode == false}">
+                            <label class="um-label">Confirmar Password</label>
+                            <input class="um-input" type="password" th:field="*{confirmPassword}" placeholder="••••••••"/>
+                            <div class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="um-label">Roles</label>
+                            <select class="um-input" size="3" multiple th:field="*{roles}">
+                                <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <button type="button" class="btn-submit" onclick="submitUserForm()">
+                            <i class="fas fa-save mr-1"></i>
+                            <span th:text="${editMode} ? 'Guardar Cambios' : 'Crear Usuario'">Crear Usuario</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="um-card">
+        <div class="um-card-body" style="padding: 1rem;">
+            <table id="userList" class="um-table" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${userList}">
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.firstName}"></td>
+                        <td th:text="${user.lastName}"></td>
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td>
+                            <span th:if="${user.enabled}" class="badge-active">Activo</span>
+                            <span th:unless="${user.enabled}" class="badge-inactive">Inactivo</span>
+                        </td>
+                        <td style="white-space:nowrap;">
+                            <a class="action-btn" href="#"
+                               th:onclick="'editUser(' + ${user.id} + '); return false;'" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a class="action-btn delete" href="#"
+                               th:onclick="'confirmDelete(\'' + ${user.id} + '\');'" title="Eliminar">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="um-alert um-alert-danger mt-3" th:if="${deleteError}" th:text="${deleteError}"></div>
+        </div>
+    </div>
+
+
+<script>
+    if (!$.fn.DataTable.isDataTable('#userList')) {
+        $('#userList').DataTable({
+            language: {
+                search: 'Buscar:',
+                lengthMenu: 'Mostrar _MENU_ registros',
+                zeroRecords: 'Sin resultados',
+                info: 'Mostrando _START_ a _END_ de _TOTAL_ usuarios',
+                infoEmpty: 'Sin usuarios',
+                paginate: { previous: '‹', next: '›' }
+            }
+        });
+    }
+
+    if ($('#userFormPanel').is(':visible')) {
+        $('#btnToggleForm').addClass('active').html('<span class="btn-icon"><i class="fas fa-times"></i></span> Cancelar');
+    }
+
+    function submitUserForm() {
+        var $form = $('#userForm');
+        if (typeof renderModule === 'function') {
+            $.post($form.attr('action'), $form.serialize(), function (data) {
+                renderModule(data);
+            });
+        } else {
+            $form[0].submit();
+        }
+    }
+
+    function editUser(id) {
+        if (typeof loadModule === 'function') {
+            loadModule('/user/editUser/' + id);
+        } else {
+            window.location = '/user/editUser/' + id;
+        }
+    }
+
+    function toggleUserForm() {
+        var $panel = $('#userFormPanel');
+        var $btn   = $('#btnToggleForm');
+        if ($panel.is(':visible')) {
+            // Si hay campo hidden "id" estamos en editMode — recargar lista limpia
+            var isEditMode = $('#userForm input[name="id"]').length > 0;
+            if (isEditMode) {
+                if (typeof loadModule === 'function') {
+                    loadModule('/user/view');
+                } else {
+                    window.location = '/user/view';
+                }
+                return;
+            }
+            $panel.slideUp(200);
+            $btn.removeClass('active').html('<span class="btn-icon"><i class="fas fa-plus"></i></span> Agregar Usuario');
+        } else {
+            $panel.slideDown(200);
+            $btn.addClass('active').html('<span class="btn-icon"><i class="fas fa-times"></i></span> Cancelar');
+        }
+    }
+
+    function confirmDelete(id) {
+        $('#deleteModal').modal('show');
+        $('#userIdHiddenInput').val(id);
+    }
+
+    function deleteUser() {
+        var id = $('#userIdHiddenInput').val();
+        $('#deleteModal').modal('hide');
+        if (typeof loadModule === 'function') {
+            loadModule('/user/deleteUser/' + id);
+        } else {
+            window.location = '/user/deleteUser/' + id;
+        }
+    }
 </script>
 
-<!-- DATA TABLE -->
-<script type="text/javascript" th:src="@{https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js}"></script>
-<script type="text/javascript" th:src="@{https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-<link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css}">	
-<link rel="stylesheet" th:href="@{https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css}">
+</div><!-- /module-content -->
 
-<!-- Nuestro css-->
-<link rel="stylesheet" th:href="@{/css/form/main.css}" />
-<script type="text/javascript" th:src="@{/js/common/table.js}"></script>
-
-</head>
-<body class="background">
-	<div class="container">
-		<div class="mx-auto col-sm-8 main-section" id="myTab" role="tablist">
-			<ul class="nav nav-tabs justify-content-end">
-				<li class="nav-item">
-					<a class="nav-link" th:classappend=" ${listTab}" id="list-tab" data-toggle="tab" href="#list" role="tab" aria-controls="list" aria-selected="false">
-						List
-					</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" th:classappend=" ${formTab}" id="form-tab" data-toggle="tab" href="#form" role="tab" aria-controls="form" aria-selected="true">
-						Form
-					</a>
-				</li>
-			</ul>
-			<div class="tab-content" id="myTabContent">
-				<div class="tab-pane fade show" th:classappend=" ${listTab}" id="list" role="tabpanel" aria-labelledby="list-tab">
-					<div class="card">
-						<div class="card-header">
-							<h4>Usuarios</h4>
-						</div>
-						<div class="card-body">
-							<div th:include="user/list" th:remove="tag"></div>
-						</div>
-					</div>
-				</div>
-				<div class="tab-pane fade show" th:classappend="${formTab}" id="form" role="tabpanel" aria-labelledby="form-tab">
-					<div class="card">
-						<div class="card-header">
-							<h4>Agregar Usuario</h4>
-						</div>
-						<div class="card-body">
-							<div th:include="user/form" th:remove="tag"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div th:include="common/confirm-delete-dialog.html" th:remove="tag"></div>
 </body>
 </html>
