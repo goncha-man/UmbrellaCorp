@@ -164,7 +164,8 @@
             <div style="font-size:1.1rem; font-weight:700; color:#fff;">Usuarios</div>
             <div style="font-size:0.75rem; color:#666;">Gestión de usuarios del sistema</div>
         </div>
-        <button class="btn-add" id="btnToggleForm" onclick="toggleUserForm()">
+        <button class="btn-add" id="btnToggleForm" onclick="toggleUserForm()"
+                sec:authorize="hasRole('ADMIN')">
             <span class="btn-icon"><i class="fas fa-plus"></i></span>
             Agregar Usuario
         </button>
@@ -222,9 +223,13 @@
                             <div class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label class="um-label">Roles</label>
-                            <select class="um-input" size="3" multiple th:field="*{roles}">
-                                <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+                            <label class="um-label">Rol</label>
+                            <select class="um-input" th:field="*{role}">
+                                <option value="">-- Sin rol --</option>
+                                <option th:each="r : ${roles}"
+                                        th:value="${r.id}"
+                                        th:text="${r.description}">
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -252,7 +257,7 @@
                         <th>Username</th>
                         <th>Email</th>
                         <th>Estado</th>
-                        <th></th>
+                        <th sec:authorize="hasRole('ADMIN')"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -266,7 +271,7 @@
                             <span th:if="${user.enabled}" class="badge-active">Activo</span>
                             <span th:unless="${user.enabled}" class="badge-inactive">Inactivo</span>
                         </td>
-                        <td style="white-space:nowrap;">
+                        <td style="white-space:nowrap;" sec:authorize="hasRole('ADMIN')">
                             <a class="action-btn" href="#"
                                th:onclick="'editUser(' + ${user.id} + '); return false;'" title="Editar">
                                 <i class="fas fa-edit"></i>

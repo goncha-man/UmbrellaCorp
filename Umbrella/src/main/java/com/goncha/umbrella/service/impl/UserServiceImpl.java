@@ -5,6 +5,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.goncha.umbrella.entity.User;
@@ -17,6 +18,9 @@ public class UserServiceImpl implements UserService{
 	@Autowired
 	UserRepository repository;
 
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
 	@Override
 	public Iterable<User> getAllUser() {
 		return repository.findAll();
@@ -24,7 +28,8 @@ public class UserServiceImpl implements UserService{
 	
 	@Override
 	public User createUser(@Valid User user) throws Exception {
-		if(checkUsernameAvailale(user) && checkPassworodValid(user)) {
+		if(checkUsernameAvailable(user) && checkPassworodValid(user)) {
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			repository.save(user);
 		}
 		return null;
@@ -54,23 +59,18 @@ public class UserServiceImpl implements UserService{
 		
 	}
 
-	private boolean checkUsernameAvailale(User user) throws Exception{
-
-		Optional<User> userFound = repository.findByUsername(user.getUsername());
-
-		if(userFound.isPresent()) {
-			
-			throw new Exception("Username not available");
-			
-		}
-
-		return !userFound.isPresent();
+	private boolean checkUsernameAvailable(User user) throws Exception{
+        repository.findByUsername(user.getUsername())
+                .map(usr -> {
+                    throw new IllegalStateException("Username not available");
+                });
+        return true;
 	}
 
 	private boolean checkPassworodValid(User user) throws Exception {
 
 		if(user.getConfirmPassword() == null || user.getConfirmPassword().isEmpty()) 
-			throw new Exception("Corfirm password can not be empty");
+			throw new Exception("Confirm password can not be empty");
 		
 		boolean isValid = user.getPassword().equals(user.getConfirmPassword());
 		
@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService{
 		if (!newPassword.equals(confirmPassword))
 			throw new Exception("Passwords do not match");
 		User user = getUserById(id);
-		user.setPassword(newPassword);
+		user.setPassword(passwordEncoder.encode(newPassword));
 		repository.save(user);
 	}
 
@@ -100,8 +100,8 @@ public class UserServiceImpl implements UserService{
 		to.setFirstName(from.getFirstName());
 		to.setLastName(from.getLastName());
 		to.setEmail(from.getEmail());
-		to.setRoles(from.getRoles());
 		to.setEnabled(from.getEnabled());
+		to.setRole(from.getRole());
 	}
 	
 }

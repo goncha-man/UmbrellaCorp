@@ -23,12 +23,18 @@
 				<div class="col-12 avatar-img">
 					<img th:src="@{/img/login/racoon.png}" />
 				</div>
-				<form class="col-12" action="">
+				<form class="col-12" th:action="@{/login}" method="post">
+					<div th:if="${param.error}" class="alert alert-danger py-2" style="font-size:0.82rem;">
+						Usuario o contraseña incorrectos.
+					</div>
+					<div th:if="${param.logout}" class="alert alert-success py-2" style="font-size:0.82rem;">
+						Sesión cerrada exitosamente.
+					</div>
 					<div class="form-group" id="user-group">
-						<input type="text" class="form-control" placeholder="Access Code">
+						<input type="text" name="username" class="form-control" placeholder="Access Code" autocomplete="username">
 					</div>
 					<div class="form-group" id="pwd-group">
-						<input type="password" class="form-control" placeholder="Security Key">
+						<input type="password" name="password" class="form-control" placeholder="Security Key" autocomplete="current-password">
 					</div>
 					<button type="submit" class="btn btn-danger sign-in"><i class="fas fa-sign-in-alt"></i>  Sign in</button>
 				</form>
