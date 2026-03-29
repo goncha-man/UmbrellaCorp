@@ -184,7 +184,8 @@
             </div>
             <div class="um-card-body">
                 <form id="userForm" autocomplete="off" th:object="${user}"
-                      th:action="${editMode != null} ? @{/user/editUser} : @{/user/view}" method="post">
+                      th:action="${editMode != null} ? @{/user/{id}(id=${user.id})} : @{/user}" method="post">
+                    <input type="hidden" name="_method" value="PUT" th:if="${editMode != null}"/>
                     <input type="hidden" th:field="*{id}" th:if="${editMode}"/>
                     <input type="hidden" th:field="*{password}" th:if="${editMode}"/>
                     <input type="hidden" th:field="*{confirmPassword}" th:if="${editMode}"/>
@@ -270,8 +271,13 @@
                                th:onclick="'editUser(' + ${user.id} + '); return false;'" title="Editar">
                                 <i class="fas fa-edit"></i>
                             </a>
+                            <a class="action-btn" href="#"
+                               th:onclick="'confirmChangePassword(\'' + ${user.id} + '\'); return false;'" title="Cambiar contraseña">
+                                <i class="fas fa-key"></i>
+                            </a>
                             <a class="action-btn delete" href="#"
-                               th:onclick="'confirmDelete(\'' + ${user.id} + '\');'" title="Eliminar">
+                               th:onclick="'confirmDelete(' + ${user.id} + ', this); return false;'"
+                               th:data-name="|${user.firstName} ${user.lastName}|" title="Eliminar">
                                 <i class="fas fa-trash-alt"></i>
                             </a>
                         </td>
@@ -304,8 +310,12 @@
     function submitUserForm() {
         var $form = $('#userForm');
         if (typeof renderModule === 'function') {
-            $.post($form.attr('action'), $form.serialize(), function (data) {
-                renderModule(data);
+            var isEdit = $('#userForm input[name="id"]').length > 0;
+            $.ajax({
+                method: isEdit ? 'PUT' : 'POST',
+                url: $form.attr('action'),
+                data: $form.serialize(),
+                success: function (data) { renderModule(data); }
             });
         } else {
             $form[0].submit();
@@ -314,9 +324,9 @@
 
     function editUser(id) {
         if (typeof loadModule === 'function') {
-            loadModule('/user/editUser/' + id);
+            loadModule('/user/' + id + '/edit');
         } else {
-            window.location = '/user/editUser/' + id;
+            window.location = '/user/' + id + '/edit';
         }
     }
 
@@ -324,13 +334,12 @@
         var $panel = $('#userFormPanel');
         var $btn   = $('#btnToggleForm');
         if ($panel.is(':visible')) {
-            // Si hay campo hidden "id" estamos en editMode — recargar lista limpia
             var isEditMode = $('#userForm input[name="id"]').length > 0;
             if (isEditMode) {
                 if (typeof loadModule === 'function') {
-                    loadModule('/user/view');
+                    loadModule('/user');
                 } else {
-                    window.location = '/user/view';
+                    window.location = '/user';
                 }
                 return;
             }
@@ -342,19 +351,27 @@
         }
     }
 
-    function confirmDelete(id) {
-        $('#deleteModal').modal('show');
+    function confirmDelete(id, el) {
         $('#userIdHiddenInput').val(id);
+        $('#deleteUserName').text($(el).data('name'));
+        $('#deleteModal').modal('show');
     }
 
     function deleteUser() {
         var id = $('#userIdHiddenInput').val();
         $('#deleteModal').modal('hide');
-        if (typeof loadModule === 'function') {
-            loadModule('/user/deleteUser/' + id);
-        } else {
-            window.location = '/user/deleteUser/' + id;
-        }
+        $.ajax({
+            method: 'DELETE',
+            url: '/user/' + id,
+            dataType: 'json',
+            success: function (data) {
+                if (typeof loadModule === 'function') {
+                    loadModule('/user');
+                } else {
+                    window.location = '/user';
+                }
+            }
+        });
     }
 </script>
 

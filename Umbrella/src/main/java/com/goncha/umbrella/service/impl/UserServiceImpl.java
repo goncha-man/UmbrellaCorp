@@ -84,6 +84,17 @@ public class UserServiceImpl implements UserService{
 
 	}
 	
+	@Override
+	public void changePassword(Long id, String newPassword, String confirmPassword) throws Exception {
+		if (newPassword == null || newPassword.isEmpty())
+			throw new Exception("Password cannot be empty");
+		if (!newPassword.equals(confirmPassword))
+			throw new Exception("Passwords do not match");
+		User user = getUserById(id);
+		user.setPassword(newPassword);
+		repository.save(user);
+	}
+
 	protected void mapUser(User from, User to) {
 		to.setUsername(from.getUsername());
 		to.setFirstName(from.getFirstName());
