@@ -15,5 +15,7 @@ public interface UserService {
 	public User updateUser(@Valid User user) throws Exception;
 
 	public void deleteUser(Long id) throws Exception;
-	
+
+	public void changePassword(Long id, String newPassword, String confirmPassword) throws Exception;
+
 }
