@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Umbrella Corp. | Dashboard</title>
     <script type="text/javascript" th:src="@{/js/common/jquery.js}"></script>
     <link rel="stylesheet" th:href="@{/css/common/bootstrap.min.css}"/>
@@ -262,8 +265,9 @@
             <i class="fas fa-hospital"></i> Hospitales <span class="badge-soon">Pronto</span>
         </a>
 
-        <div class="sidebar-section">Admin</div>
-        <a href="#" class="nav-item-side" data-module="usuarios" data-load="/user">
+        <div class="sidebar-section" sec:authorize="hasAnyRole('ADMIN', 'ANALYST')">Admin</div>
+        <a href="#" class="nav-item-side" data-module="usuarios" data-load="/user"
+           sec:authorize="hasAnyRole('ADMIN', 'ANALYST')">
             <i class="fas fa-users-cog"></i> Usuarios
         </a>
         <a href="#" class="nav-item-side" style="opacity:0.4; cursor:default;">
@@ -273,9 +277,10 @@
 
     <div class="sidebar-footer">
         <div class="sidebar-user">
-            <div class="avatar-circle">A</div>
+            <div class="avatar-circle"
+                 th:text="${#strings.toUpperCase(#strings.substring(#authentication.name, 0, 1))}">A</div>
             <div>
-                <div class="user-name">Admin</div>
+                <div class="user-name" sec:authentication="name">Admin</div>
                 <div class="user-role">Administrador</div>
             </div>
         </div>
@@ -335,6 +340,13 @@
 
 <script>
     var dashboardHTML = null;
+
+    // Attach CSRF token to every AJAX request (required for DELETE, PATCH, PUT)
+    var csrfToken  = $("meta[name='_csrf']").attr("content");
+    var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+    $(document).ajaxSend(function (e, xhr) {
+        xhr.setRequestHeader(csrfHeader, csrfToken);
+    });
 
     $(document).ready(function () {
         dashboardHTML = $('#dashboard-view').html();

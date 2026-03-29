@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -44,6 +45,7 @@ public class UserController {
 		return "user/view";
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping({"", "/"})
 	public String createUser(@Valid @ModelAttribute("user") User user, BindingResult result, Model model) {
 		if (result.hasErrors()) {
@@ -70,6 +72,7 @@ public class UserController {
 		return "user/view";
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	public String putEditUser(@PathVariable Long id, @Valid @ModelAttribute("user") User user,
 			BindingResult result, Model model) {
@@ -92,6 +95,7 @@ public class UserController {
 		return "user/view";
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<Map<String, String>> deleteUser(@PathVariable Long id) {
@@ -106,6 +110,7 @@ public class UserController {
 		return ResponseEntity.ok(result);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PatchMapping("/{id}/password")
 	@ResponseBody
 	public ResponseEntity<Map<String, String>> changePassword(

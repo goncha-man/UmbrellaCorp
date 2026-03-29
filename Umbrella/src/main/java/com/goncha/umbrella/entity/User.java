@@ -1,7 +1,6 @@
 package com.goncha.umbrella.entity;
 
 import java.io.Serializable;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,12 +8,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import javax.persistence.JoinColumn;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -55,12 +53,9 @@ public class User implements Serializable {
 	@Transient 
 	private String confirmPassword;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name="user_roles"
-		,joinColumns=@JoinColumn(name="user_id")
-		,inverseJoinColumns=@JoinColumn(name="role_id"))
-	
-	private Set<Role> roles;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "role_id")
+	private Role role;
 	
 	public User() {	}
 	
@@ -132,12 +127,12 @@ public class User implements Serializable {
 		this.confirmPassword = confirmPassword;
 	}
 
-	public Set<Role> getRoles() {
-		return roles;
+	public Role getRole() {
+		return role;
 	}
 
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 	public static long getSerialversionuid() {
@@ -155,7 +150,7 @@ public class User implements Serializable {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
-		result = prime * result + ((roles == null) ? 0 : roles.hashCode());
+		result = prime * result + ((role == null) ? 0 : role.hashCode());
 		result = prime * result + ((username == null) ? 0 : username.hashCode());
 		return result;
 	}
@@ -204,10 +199,10 @@ public class User implements Serializable {
 				return false;
 		} else if (!password.equals(other.password))
 			return false;
-		if (roles == null) {
-			if (other.roles != null)
+		if (role == null) {
+			if (other.role != null)
 				return false;
-		} else if (!roles.equals(other.roles))
+		} else if (!role.equals(other.role))
 			return false;
 		if (username == null) {
 			if (other.username != null)
@@ -221,7 +216,7 @@ public class User implements Serializable {
 	public String toString() {
 		return "User [id=" + id + ", enabled=" + enabled + ", firstName=" + firstName + ", lastName=" + lastName
 				+ ", email=" + email + ", username=" + username + ", password=" + password + ", confirmPassword="
-				+ confirmPassword + ", roles=" + roles + "]";
+				+ confirmPassword + ", role=" + role + "]";
 	}     
 	
 }
